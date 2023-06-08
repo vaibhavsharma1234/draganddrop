@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Drag and Drop Example</title>
+    <style>
+      /* CSS styles */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .container-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+      }
+
+      .container {
+        width: 300px;
+        height: 300px;
+        border: 2px solid #ddd;
+        padding: 20px;
+        background-color: #f9f9f9;
+      }
+
+      .item {
+        background-color: #f1f1f1;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 10px;
+        cursor: move;
+        user-select: none;
+      }
+
+      .item:hover {
+        background-color: #e0e0e0;
+      }
+
+      .droppable {
+        background-color: #e0e0e0;
+      }
+
+      .success-message {
+        color: green;
+        margin-top: 10px;
+        display: none;
+        text-align: center;
+      }
+
+      .reset-button {
+        background-color: #f44336;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 20px;
+      }
+
+      .reset-button:hover {
+        background-color: #d32f2f;
+      }
+
+      @media screen and (max-width: 500px) {
+        .container {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Drag and Drop Example</h1>
+
+    <div class="container-wrapper">
+      <!-- Container 1 -->
+      <div class="container" id="container1">
+        <!-- Draggable items -->
+        <div class="item" draggable="true">Item 1</div>
+        <div class="item" draggable="true">Item 2</div>
+        <div class="item" draggable="true">Item 3</div>
+      </div>
+      <!-- Container 2 -->
+      <div class="container droppable" id="container2"></div>
+    </div>
+
+    <p id="successMessage" class="success-message">
+      Item dropped successfully!
+    </p>
+
+    <button onclick="resetContainers()" class="reset-button">Reset</button>
+    <script>
+      // Get the containers
+      const container1 = document.getElementById('container1')
+      const container2 = document.getElementById('container2')
+
+      // Add event listeners for draggable items
+      const items = document.querySelectorAll('.item')
+      items.forEach((item) => {
+        item.addEventListener('dragstart', dragStart)
+      })
+
+      // Add event listeners for droppable container
+      container2.addEventListener('dragover', dragOver)
+      container2.addEventListener('dragenter', dragEnter)
+      container2.addEventListener('dragleave', dragLeave)
+      container2.addEventListener('drop', drop)
+
+      // Drag functions
+
+      /**
+       * Event handler for dragstart event on draggable items.
+       * Sets the data to be transferred and changes the opacity of the dragged item.
+       * @param {Event} e - The dragstart event object.
+       */
+      function dragStart(e) {
+        e.dataTransfer.setData('text/plain', e.target.id)
+        e.target.style.opacity = '0.4'
+      }
+
+      /**
+       * Event handler for dragover event on droppable container.
+       * Prevents the default behavior.
+       * @param {Event} e - The dragover event object.
+       */
+      function dragOver(e) {
+        e.preventDefault()
+      }
+
+      /**
+       * Event handler for dragenter event on droppable container.
+       * Adds the 'droppable' class to the container.
+       * @param {Event} e - The dragenter event object.
+       */
+      function dragEnter(e) {
+        e.preventDefault()
+        container2.classList.add('droppable')
+      }
+
+      /**
+       * Event handler for dragleave event on droppable container.
+       * Removes the 'droppable' class from the container.
+       */
+      function dragLeave() {
+        container2.classList.remove('droppable')
+      }
+
+      /**
+       * Event handler for drop event on droppable container.
+       * Appends the dragged item to the container and displays a success message.
+       * @param {Event} e - The drop event object.
+       */
+      function drop(e) {
+        e.preventDefault()
+        const itemId = e.dataTransfer.getData('text/plain')
+        const item = document.getElementById(itemId)
+        const clonedItem = item.cloneNode(true)
+        container2.appendChild(clonedItem)
+        container2.classList.remove('droppable')
+        item.style.opacity = '1'
+        document.getElementById('successMessage').style.display = 'block'
+        setTimeout(function () {
+          document.getElementById('successMessage').style.display = 'none'
+        }, 2000)
+      }
+
+      // Reset function
+
+      /**
+       * Resets the containers to their original state.
+       * Clears container 2 and restores container 1 with its initial items.
+       */
+      function resetContainers() {
+        container1.innerHTML = `
+        <div class="item" draggable="true">Item 1</div>
+        <div class="item" draggable="true">Item 2</div>
+        <div class="item" draggable="true">Item 3</div>
+      `
+        container2.innerHTML = ''
+      }
+    </script>
+  </body>
+</html>
